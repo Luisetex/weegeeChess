@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List, Tuple
 
-from .utils import coordinate_to_row_column, indexes_to_algebraic
+from .utils import algebraic_to_indexes, indexes_to_algebraic
 
 WHITE_KING = "♔"
 WHITE_QUEEN = "♕"
@@ -43,9 +43,9 @@ class Piece:
         return new_row_pos == self.row and new_column_pos == self.column
 
     def _is_destination_square_valid(
-        self, destination_row: int, destination_column: int, board: List[List[Piece | None]]
+        self, destination_row: int, destination_column: int, squares: List[List[Piece | None]]
     ) -> bool:
-        destination_square = board[destination_row][destination_column]
+        destination_square = squares[destination_row][destination_column]
         if isinstance(destination_square, Piece):
             if destination_square.is_white != self.is_white:
                 return True
@@ -53,7 +53,16 @@ class Piece:
             return True
         return False
 
-    def get_possible_moves(self, board: List[List[Piece | None]]):
+    def _is_destination_capturable(
+        self, destination_row: int, destination_column: int, squares: List[List[Piece | None]]
+    ) -> bool:
+        destination_square = squares[destination_row][destination_column]
+        if isinstance(destination_square, Piece):
+            if destination_square.is_white != self.is_white:
+                return True
+        return False
+
+    def update_possible_moves(self, squares: List[List[Piece | None]]):
         number_of_steps = 7 if self.is_ranged else 1
         possible_moves: List[str] = []
         for movement in self._movements:
@@ -63,8 +72,10 @@ class Piece:
                 candidate_row += movement[0]
                 candidate_column += movement[1]
                 if self._check_boundary(candidate_row, candidate_column):
-                    if self._is_destination_square_valid(candidate_row, candidate_column, board):
+                    if self._is_destination_square_valid(candidate_row, candidate_column, squares):
                         possible_moves.append(indexes_to_algebraic(candidate_row, candidate_column))
+                    else:
+                        break
                 else:
                     break
         self.possible_moves = possible_moves
@@ -74,7 +85,29 @@ class Pawn(Piece):
     def __init__(self, row: int, column: int, is_white: bool):
         char = WHITE_PAWN if is_white else BLACK_PAWN
         super().__init__(char=char, is_white=is_white, row=row, column=column, is_ranged=False)
-        self._movements = [(1, 0)] if self.is_white else [(-1, 0)]
+        self._movements = [(-1, 0)] if self.is_white else [(1, 0)]
+        self._capture_moves = [(1, 1), (1, -1)] if self.is_white else [(-1, -1), (-1, 1)]
+
+    def update_possible_moves(self, squares: List[List[Piece | None]]):
+        movements = self._movements
+        if self.is_white and self.row == 6:
+            movements.append((-2, 0))
+        if not self.is_white and self.row == 1:
+            movements.append((2, 0))
+        super().update_possible_moves(squares)
+        self._update_capturing_moves(squares)
+
+    def _update_capturing_moves(self, squares):
+        for capture_move in self._capture_moves:
+            candidate_row = self.row
+            candidate_column = self.column
+            candidate_row += capture_move[0]
+            candidate_column += capture_move[1]
+            if self._check_boundary(candidate_row, candidate_column):
+                if self._is_destination_capturable(candidate_row, candidate_column, squares):
+                    self.possible_moves.append(
+                        (indexes_to_algebraic(candidate_row, candidate_column))
+                    )
 
 
 class King(Piece):

@@ -2,7 +2,7 @@ from copy import copy
 from typing import List
 
 from .pieces import Bishop, King, Knight, Pawn, Piece, Queen, Rook
-from .utils import row_index_to_coordinate
+from .utils import row_index_to_algebraic
 
 BLACK_SQUARE = "█"
 WHITE_SQUARE = " "
@@ -19,7 +19,7 @@ class Board:
         for row_index, row in enumerate(self.squares):
             for column_index, square in enumerate(row):
                 if column_index == 0:
-                    text += row_index_to_coordinate(row_index) + " "
+                    text += row_index_to_algebraic(row_index) + " "
                 if square:
                     text += square.char
                 else:
