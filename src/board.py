@@ -2,7 +2,7 @@ from copy import copy
 from typing import List
 
 from .pieces import Bishop, King, Knight, Pawn, Piece, Queen, Rook
-from .utils import indexes_to_algebraic, row_index_to_coordinate
+from .utils import row_index_to_coordinate
 
 BLACK_SQUARE = "█"
 WHITE_SQUARE = " "
@@ -36,31 +36,31 @@ class Board:
         for _ in range(8):
             self.squares.append([None] * 8)
         # PAWNS
-        #        for column_index, _ in enumerate(self.board[1]):
-        #           self.board[1][column_index] = Pawn(1, column_index, "black")
-        #        for column_index, _ in enumerate(self.board[6]):
-        #            self.board[6][column_index] = Pawn(6, column_index, "white")
+        for column_index, _ in enumerate(self.squares[1]):
+            self.squares[1][column_index] = Pawn(1, column_index, False)
+        for column_index, _ in enumerate(self.squares[6]):
+            self.squares[6][column_index] = Pawn(6, column_index, True)
         # ROOKS
-        self.squares[0][0] = Rook(0, 0, "black")
-        self.squares[0][7] = Rook(0, 7, "black")
-        self.squares[7][0] = Rook(7, 0, "white")
-        self.squares[7][7] = Rook(7, 7, "white")
+        self.squares[0][0] = Rook(0, 0, False)
+        self.squares[0][7] = Rook(0, 7, False)
+        self.squares[7][0] = Rook(7, 0, True)
+        self.squares[7][7] = Rook(7, 7, True)
         # KNIGHTS
-        self.squares[0][1] = Knight(0, 1, "black")
-        self.squares[0][6] = Knight(0, 6, "black")
-        self.squares[7][1] = Knight(7, 1, "white")
-        self.squares[7][6] = Knight(7, 6, "white")
+        self.squares[0][1] = Knight(0, 1, False)
+        self.squares[0][6] = Knight(0, 6, False)
+        self.squares[7][1] = Knight(7, 1, True)
+        self.squares[7][6] = Knight(7, 6, True)
         # BISHOPS
-        self.squares[0][2] = Bishop(0, 2, "black")
-        self.squares[0][5] = Bishop(0, 5, "black")
-        self.squares[7][2] = Bishop(7, 2, "white")
-        self.squares[7][5] = Bishop(7, 5, "white")
+        self.squares[0][2] = Bishop(0, 2, False)
+        self.squares[0][5] = Bishop(0, 5, False)
+        self.squares[7][2] = Bishop(7, 2, True)
+        self.squares[7][5] = Bishop(7, 5, True)
         # QUEENS
-        self.squares[0][3] = Queen(0, 3, "black")
-        self.squares[7][3] = Queen(7, 3, "white")
+        self.squares[0][3] = Queen(0, 3, False)
+        self.squares[7][3] = Queen(7, 3, True)
         # KINGS
-        self.squares[0][4] = King(0, 4, "black")
-        self.squares[7][4] = King(7, 4, "white")
+        self.squares[0][4] = King(0, 4, False)
+        self.squares[7][4] = King(7, 4, True)
 
     def update_board(self):
         for row_index, row in enumerate(self.squares):
