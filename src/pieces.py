@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List, Tuple
 
-from .utils import algebraic_to_indexes, indexes_to_algebraic
+from .utils import indexes_to_algebraic
 
 WHITE_KING = "♔"
 WHITE_QUEEN = "♕"

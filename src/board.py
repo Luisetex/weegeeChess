@@ -21,14 +21,14 @@ class Board:
                 if column_index == 0:
                     text += row_index_to_algebraic(row_index) + " "
                 if square:
-                    text += square.char
+                    text += square.char + " "
                 else:
                     if (row_index + column_index) % 2 == 0:
-                        text += WHITE_SQUARE
+                        text += WHITE_SQUARE + " "
                     else:
-                        text += BLACK_SQUARE
+                        text += BLACK_SQUARE + " "
             text += "\n"
-        text += "  abcdefgh\n"
+        text += "  a b c d e f g h\n"
         return text
 
     def _init_board(self):
@@ -61,6 +61,9 @@ class Board:
         # KINGS
         self.squares[0][4] = King(0, 4, False)
         self.squares[7][4] = King(7, 4, True)
+
+    def get_square_from_row_column(self, row_index: int, column_index: int) -> Piece | None:
+        return self.squares[row_index][column_index]
 
     def update_board(self):
         for row_index, row in enumerate(self.squares):
