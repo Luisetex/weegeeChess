@@ -28,7 +28,7 @@ class Piece:
         self.has_moved: bool = False
         self.possible_moves: List[str] = []
         self.is_ranged = is_ranged
-        self._movements: List[Tuple[int, int]]
+        self._movement_vectors: List[Tuple[int, int]]
 
     def __str__(self) -> str:
         return self.char
@@ -65,7 +65,7 @@ class Piece:
     def update_possible_moves(self, squares: List[List[Piece | None]]):
         number_of_steps = 7 if self.is_ranged else 1
         possible_moves: List[str] = []
-        for movement in self._movements:
+        for movement in self._movement_vectors:
             candidate_row = self.row
             candidate_column = self.column
             for _ in range(number_of_steps):
@@ -84,12 +84,13 @@ class Piece:
 class Pawn(Piece):
     def __init__(self, row: int, column: int, is_white: bool):
         char = WHITE_PAWN if is_white else BLACK_PAWN
+        self.capture_moves: List[str] = []
         super().__init__(char=char, is_white=is_white, row=row, column=column, is_ranged=False)
-        self._movements = [(-1, 0)] if self.is_white else [(1, 0)]
-        self._capture_moves = [(1, 1), (1, -1)] if self.is_white else [(-1, -1), (-1, 1)]
+        self._movement_vectors = [(-1, 0)] if self.is_white else [(1, 0)]
+        self._capture_vectors = [(1, 1), (1, -1)] if self.is_white else [(-1, -1), (-1, 1)]
 
     def update_possible_moves(self, squares: List[List[Piece | None]]):
-        movements = self._movements
+        movements = self._movement_vectors
         if self.is_white and self.row == 6:
             movements.append((-2, 0))
         if not self.is_white and self.row == 1:
@@ -97,49 +98,49 @@ class Pawn(Piece):
         super().update_possible_moves(squares)
         self._update_capturing_moves(squares)
 
-    def _update_capturing_moves(self, squares):
-        for capture_move in self._capture_moves:
+    def _update_capturing_moves(self, squares: List[List[Piece | None]]):
+        capture_moves: List[str] = []
+        for capture_move in self._capture_vectors:
             candidate_row = self.row
             candidate_column = self.column
             candidate_row += capture_move[0]
             candidate_column += capture_move[1]
             if self._check_boundary(candidate_row, candidate_column):
                 if self._is_destination_capturable(candidate_row, candidate_column, squares):
-                    self.possible_moves.append(
-                        (indexes_to_algebraic(candidate_row, candidate_column))
-                    )
+                    capture_moves.append((indexes_to_algebraic(candidate_row, candidate_column)))
+        self.capture_moves = capture_moves
 
 
 class King(Piece):
     def __init__(self, row: int, column: int, is_white: bool):
         char = WHITE_KING if is_white else BLACK_KING
         super().__init__(char=char, is_white=is_white, row=row, column=column, is_ranged=False)
-        self._movements = [(-1, -1), (-1, 1), (-1, 0), (1, -1), (1, 1), (1, 0), (0, -1), (0, 1)]
+        self._movement_vectors = [(-1, -1), (-1, 1), (-1, 0), (1, -1), (1, 1), (1, 0), (0, -1), (0, 1)]
 
 
 class Queen(Piece):
     def __init__(self, row: int, column: int, is_white: bool):
         char = WHITE_QUEEN if is_white else BLACK_QUEEN
         super().__init__(char=char, is_white=is_white, row=row, column=column)
-        self._movements = [(-1, -1), (-1, 1), (-1, 0), (1, -1), (1, 1), (1, 0), (0, -1), (0, 1)]
+        self._movement_vectors = [(-1, -1), (-1, 1), (-1, 0), (1, -1), (1, 1), (1, 0), (0, -1), (0, 1)]
 
 
 class Rook(Piece):
     def __init__(self, row: int, column: int, is_white: bool):
         char = WHITE_ROOK if is_white else BLACK_ROOK
         super().__init__(char=char, is_white=is_white, row=row, column=column)
-        self._movements = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+        self._movement_vectors = [(1, 0), (-1, 0), (0, 1), (0, -1)]
 
 
 class Bishop(Piece):
     def __init__(self, row: int, column: int, is_white: bool):
         char = WHITE_BISHOP if is_white else BLACK_BISHOP
         super().__init__(char=char, is_white=is_white, row=row, column=column)
-        self._movements = [(1, 1), (-1, -1), (1, -1), (-1, 1)]
+        self._movement_vectors = [(1, 1), (-1, -1), (1, -1), (-1, 1)]
 
 
 class Knight(Piece):
     def __init__(self, row: int, column: int, is_white: bool):
         char = WHITE_KNIGHT if is_white else BLACK_KNIGHT
         super().__init__(char=char, is_white=is_white, row=row, column=column, is_ranged=False)
-        self._movements = [(2, -1), (2, 1), (-2, 1), (-2, -1), (1, 2), (-1, 2), (1, -2), (-1, -2)]
+        self._movement_vectors = [(2, -1), (2, 1), (-2, 1), (-2, -1), (1, 2), (-1, 2), (1, -2), (-1, -2)]
