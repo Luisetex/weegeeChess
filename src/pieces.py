@@ -73,6 +73,8 @@ class Piece:
                 if self._check_boundary(candidate_row, candidate_column):
                     if self._is_destination_square_valid(candidate_row, candidate_column, squares):
                         possible_moves.append(indexes_to_algebraic(candidate_row, candidate_column))
+                        if squares[candidate_row][candidate_column]:
+                            break
                     else:
                         break
                 else:
