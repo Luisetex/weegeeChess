@@ -82,9 +82,9 @@ class Board:
                 if origin_square:
                     if origin_square.row != row_index or origin_square.column != column_index:
                         destiny_square = self.squares[origin_square.row][origin_square.column]
-                        if destiny_square.piece:
+                        if destiny_square:
                             self._update_squares(origin_square, destiny_square)
-                        elif destiny_square.piece == None:
+                        elif destiny_square == None:
                             self._update_squares(origin_square, destiny_square)
 
     def _update_squares(self, origin_square: Piece | None, destiny_square: Piece | None):
