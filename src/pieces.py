@@ -62,8 +62,7 @@ class Piece:
                 return True
         return False
 
-    def update_possible_moves(self, squares: List[List[Piece | None]]):
-        number_of_steps = 7 if self.is_ranged else 1
+    def update_possible_moves(self, squares: List[List[Piece | None]], number_of_steps=7):
         possible_moves: List[str] = []
         for movement in self._movement_vectors:
             candidate_row = self.row
@@ -91,11 +90,12 @@ class Pawn(Piece):
 
     def update_possible_moves(self, squares: List[List[Piece | None]]):
         movements = self._movement_vectors
+        squares_to_move = 1
         if self.is_white and self.row == 6:
-            movements.append((-2, 0))
+            squares_to_move = 2
         if not self.is_white and self.row == 1:
-            movements.append((2, 0))
-        super().update_possible_moves(squares)
+            squares_to_move = 2
+        super().update_possible_moves(squares, number_of_steps=squares_to_move)
         self._update_capturing_moves(squares)
 
     def _update_capturing_moves(self, squares: List[List[Piece | None]]):

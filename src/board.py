@@ -12,7 +12,7 @@ class Board:
     squares: List[List[Piece | None]]
 
     def __init__(self):
-        self._init_board()
+        self.init_board()
 
     def __str__(self):
         text: str = ""
@@ -31,7 +31,7 @@ class Board:
         text += "  a b c d e f g h\n"
         return text
 
-    def _init_board(self):
+    def init_board(self):
         self.squares = []
         for _ in range(8):
             self.squares.append([None] * 8)
@@ -61,6 +61,15 @@ class Board:
         # KINGS
         self.squares[0][4] = King(0, 4, False)
         self.squares[7][4] = King(7, 4, True)
+
+    def init_board_with_pieces(self, *pieces: Piece):
+        for piece in pieces:
+            self.squares[piece.row][piece.column] = piece
+
+    def clear_board(self):
+        for row in self.squares:
+            for square in row:
+                square = None
 
     def get_square_from_row_column(self, row_index: int, column_index: int) -> Piece | None:
         return self.squares[row_index][column_index]
