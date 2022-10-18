@@ -45,7 +45,7 @@ class TestKnightk:
             assert expected_possible_move in knight.possible_moves
 
     @m.context("Test knight possible moves")
-    @m.it("Knight should'n be able to move out of bounds")
+    @m.it("Knight shouldn't be able to move out of bounds")
     def test_out_of_bounds_knight_moves(self):
         test_board = Board()
         test_board.init_empty_board()
@@ -60,7 +60,7 @@ class TestKnightk:
             assert expected_possible_move in knight.possible_moves
 
     @m.context("Test knight possible moves")
-    @m.it("Knight should'n be able to move where a piece of the same color is")
+    @m.it("Knight shouldn't be able to move where a piece of the same color is")
     def test_blocking_white_piece_knight_moves(self):
         test_board = Board()
         test_board.init_empty_board()

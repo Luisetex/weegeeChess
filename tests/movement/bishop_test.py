@@ -36,7 +36,7 @@ class TestBishopk:
             assert expected_possible_move in bishop.possible_moves
 
     @m.context("Test bishop possible moves")
-    @m.it("Bishop should'n be able to move where a piece of the same color is")
+    @m.it("Bishop shouldn't be able to move where a piece of the same color is")
     def test_blocking_white_piece_bishop_moves(self):
         test_board = Board()
         test_board.init_empty_board()

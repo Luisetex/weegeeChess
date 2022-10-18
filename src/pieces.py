@@ -20,14 +20,13 @@ BLACK_PAWN = "♟"
 
 
 class Piece:
-    def __init__(self, char: str, is_white: bool, row: int, column: int, is_ranged: bool = True):
+    def __init__(self, char: str, is_white: bool, row: int, column: int):
         self.char = char
         self.is_white = is_white
         self.row = row
         self.column = column
         self.has_moved: bool = False
         self.possible_moves: List[str] = []
-        self.is_ranged = is_ranged
         self._movement_vectors: List[Tuple[int, int]]
 
     def __str__(self) -> str:
@@ -86,7 +85,7 @@ class Pawn(Piece):
     def __init__(self, row: int, column: int, is_white: bool):
         char = WHITE_PAWN if is_white else BLACK_PAWN
         self.capture_moves: List[str] = []
-        super().__init__(char=char, is_white=is_white, row=row, column=column, is_ranged=False)
+        super().__init__(char=char, is_white=is_white, row=row, column=column)
         self._movement_vectors = [(-1, 0)] if self.is_white else [(1, 0)]
         self._capture_vectors = [(-1, 1), (-1, -1)] if self.is_white else [(1, -1), (1, 1)]
 
@@ -115,8 +114,11 @@ class Pawn(Piece):
 class King(Piece):
     def __init__(self, row: int, column: int, is_white: bool):
         char = WHITE_KING if is_white else BLACK_KING
-        super().__init__(char=char, is_white=is_white, row=row, column=column, is_ranged=False)
+        super().__init__(char=char, is_white=is_white, row=row, column=column)
         self._movement_vectors = [(-1, -1), (-1, 1), (-1, 0), (1, -1), (1, 1), (1, 0), (0, -1), (0, 1)]
+
+    def update_possible_moves(self, squares: List[List[Piece | None]]):
+        super().update_possible_moves(squares, number_of_steps=1)
 
 
 class Queen(Piece):
@@ -143,7 +145,7 @@ class Bishop(Piece):
 class Knight(Piece):
     def __init__(self, row: int, column: int, is_white: bool):
         char = WHITE_KNIGHT if is_white else BLACK_KNIGHT
-        super().__init__(char=char, is_white=is_white, row=row, column=column, is_ranged=False)
+        super().__init__(char=char, is_white=is_white, row=row, column=column)
         self._movement_vectors = [(2, -1), (2, 1), (-2, 1), (-2, -1), (1, 2), (-1, 2), (1, -2), (-1, -2)]
 
     def update_possible_moves(self, squares: List[List[Piece | None]]):

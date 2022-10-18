@@ -38,7 +38,7 @@ class TestRook:
             assert expected_possible_move in rook.possible_moves
 
     @m.context("Test rook possible moves")
-    @m.it("Rook should'n be able to move if a same color piece blocks the way")
+    @m.it("Rook shouldn't be able to move if a same color piece blocks the way")
     def test_blocking_piece_rook_moves(self):
         test_board = Board()
         test_board.init_empty_board()
