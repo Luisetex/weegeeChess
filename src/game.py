@@ -69,6 +69,9 @@ class Game:
         for piece in player.own_pieces:
             piece.update_possible_moves(self.board.squares)
 
+    def _remove_piece_from_player(self, player: Player, piece: Piece):
+        player.own_pieces.pop(player.own_pieces.index(piece))
+
     def _move_piece_to_square(
         self,
         player_piece: Piece,
@@ -81,13 +84,17 @@ class Game:
         dest_row_index, dest_column_index = algebraic_to_indexes(destination_square)
         player_square = self.board.squares[origin_row_index][origin_column_index]
         opponent_square = self.board.squares[dest_row_index][dest_column_index]
-        if isinstance(player_square, Pawn):
-            if opponent_square:
-                if destination_square not in player_square.capture_moves:
-                    raise ImpossibleMoveException(origin_square, destination_square)
+
+        if opponent_square:
+            if not (
+                destination_square in player_piece.capture_moves or destination_square in player_piece.possible_moves
+            ):
+                raise ImpossibleMoveException(origin_square, destination_square)
+            self._remove_piece_from_player(defending_player, opponent_square)
+
         self.board.squares[dest_row_index][dest_column_index] = player_piece
         player_piece.row = dest_row_index
-        player_piece.column = dest_row_index
+        player_piece.column = dest_column_index
         self.board.squares[origin_row_index][origin_column_index] = None
         self._update_all_player_moves(attacking_player)
         self._update_all_player_moves(defending_player)
@@ -110,7 +117,7 @@ class Game:
     ):
         player_piece = self.get_origin_square_player_piece(attacking_player, origin_square)
         if player_piece:
-            if destination_square in player_piece.possible_moves:
+            if destination_square in player_piece.possible_moves or destination_square in player_piece.capture_moves:
                 self._move_piece_to_square(
                     player_piece, origin_square, destination_square, attacking_player, defending_player
                 )

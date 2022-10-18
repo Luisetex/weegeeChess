@@ -27,6 +27,7 @@ class Piece:
         self.column = column
         self.has_moved: bool = False
         self.possible_moves: List[str] = []
+        self.capture_moves: List[str] = []
         self._movement_vectors: List[Tuple[int, int]]
 
     def __str__(self) -> str:
@@ -84,7 +85,6 @@ class Piece:
 class Pawn(Piece):
     def __init__(self, row: int, column: int, is_white: bool):
         char = WHITE_PAWN if is_white else BLACK_PAWN
-        self.capture_moves: List[str] = []
         super().__init__(char=char, is_white=is_white, row=row, column=column)
         self._movement_vectors = [(-1, 0)] if self.is_white else [(1, 0)]
         self._capture_vectors = [(-1, 1), (-1, -1)] if self.is_white else [(1, -1), (1, 1)]
