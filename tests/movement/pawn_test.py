@@ -10,7 +10,7 @@ test_black_pawn = Pawn(row=2, column=4, is_white=False)
 
 @m.describe("Test Pawn Logic")
 class TestPawn:
-    @m.context("Test pawn movement vectors")
+    @m.context("Test white pawn movement vectors")
     @m.it("White pawn should have its correct movement vectors")
     def test_movement_vectors_white_pawn(self):
         expected_white_pawn_movement_vectors = [(-1, 0)]
@@ -21,7 +21,7 @@ class TestPawn:
             ]
         )
 
-    @m.context("Test pawn movement vectors")
+    @m.context("Test white pawn movement vectors")
     @m.it("White pawn should have its correct capture vectors")
     def test_capture_vectors_white_pawn(self):
         expected_white_pawn_capture_vectors = [(-1, 1), (-1, -1)]
@@ -32,7 +32,7 @@ class TestPawn:
             ]
         )
 
-    @m.context("Test pawn possible moves")
+    @m.context("Test white pawn possible moves")
     @m.it("White pawn should be able to move two squares only in its initial row")
     def test_initial_moves_white_pawn(self):
         test_board = Board()
@@ -55,7 +55,7 @@ class TestPawn:
             assert indexes_to_algebraic(next_row - 1, column) in white_pawn.possible_moves
             assert indexes_to_algebraic(next_row - 2, column) not in white_pawn.possible_moves
 
-    @m.context("Test pawn possible moves")
+    @m.context("Test white pawn possible moves")
     @m.it("If next square is blocked by a white piece, pawn shouldn't be able to move")
     def test_blocked_square_by_white_piece_white_pawn(self):
         test_board = Board()
@@ -69,7 +69,7 @@ class TestPawn:
         assert indexes_to_algebraic(initial_row - 1, initial_column) not in white_pawn.possible_moves
         assert indexes_to_algebraic(initial_row - 2, initial_column) not in white_pawn.possible_moves
 
-    @m.context("Test pawn possible moves")
+    @m.context("Test white pawn possible moves")
     @m.it("If next square is blocked by a black piece, pawn shouldn't be able to capture it")
     def test_blocked_square_by_black_piece_white_pawn(self):
         test_board = Board()
@@ -83,7 +83,7 @@ class TestPawn:
         assert indexes_to_algebraic(initial_row - 1, initial_column) not in white_pawn.possible_moves
         assert indexes_to_algebraic(initial_row - 2, initial_column) not in white_pawn.possible_moves
 
-    @m.context("Test pawn capture moves")
+    @m.context("Test white pawn capture moves")
     @m.it("If next square is blocked by a black piece, pawn shouldn't be able to capture it")
     def test_white_pawn_capturing_moves(self):
         test_board = Board()
@@ -102,7 +102,7 @@ class TestPawn:
         assert indexes_to_algebraic(initial_row - 1, initial_column - 1) in white_pawn.capture_moves
         assert indexes_to_algebraic(initial_row - 1, initial_column + 1) in white_pawn.capture_moves
 
-    @m.context("Test pawn movement vectors")
+    @m.context("Test black pawn movement vectors")
     @m.it("Black pawn should have its correct movement vectors")
     def test_movement_vectors_black_pawn(self):
         expected_black_pawn_movement_vectors = [(1, 0)]
@@ -113,7 +113,7 @@ class TestPawn:
             ]
         )
 
-    @m.context("Test pawn movement vectors")
+    @m.context("Test black pawn movement vectors")
     @m.it("Black pawn should have its correct capture vectors")
     def test_capture_vectors_black_pawn(self):
         expected_black_pawn_capture_vectors = [(1, 1), (1, -1)]
@@ -124,7 +124,7 @@ class TestPawn:
             ]
         )
 
-    @m.context("Test pawn movement vectors")
+    @m.context("Test black pawn possible moves")
     @m.it("Black pawn should be able to move two squares only in its initial row")
     def test_initial_moves_black_pawn(self):
         test_board = Board()
@@ -146,3 +146,50 @@ class TestPawn:
             black_pawn.update_possible_moves(test_board.squares)
             assert indexes_to_algebraic(next_row + 1, column) in black_pawn.possible_moves
             assert indexes_to_algebraic(next_row + 2, column) not in black_pawn.possible_moves
+
+    @m.context("Test black pawn possible moves")
+    @m.it("If next square is blocked by a black piece, pawn shouldn't be able to move")
+    def test_blocked_square_by_black_piece_black_pawn(self):
+        test_board = Board()
+        test_board.init_empty_board()
+        initial_row = 6
+        initial_column = 4
+        black_pawn = Pawn(initial_row, initial_column, False)
+        blocking_black_pawn = Pawn(initial_row + 1, initial_column, False)
+        test_board.init_board_with_pieces(black_pawn, blocking_black_pawn)
+        black_pawn.update_possible_moves(test_board.squares)
+        assert indexes_to_algebraic(initial_row + 1, initial_column) not in black_pawn.possible_moves
+        assert indexes_to_algebraic(initial_row + 2, initial_column) not in black_pawn.possible_moves
+
+    @m.context("Test black pawn possible moves")
+    @m.it("If next square is blocked by a white piece, pawn shouldn't be able to capture it")
+    def test_blocked_square_by_white_piece_black_pawn(self):
+        test_board = Board()
+        test_board.init_empty_board()
+        initial_row = 6
+        initial_column = 4
+        black_pawn = Pawn(initial_row, initial_column, False)
+        blocking_white_pawn = Pawn(initial_row + 1, initial_column, True)
+        test_board.init_board_with_pieces(black_pawn, blocking_white_pawn)
+        black_pawn.update_possible_moves(test_board.squares)
+        assert indexes_to_algebraic(initial_row + 1, initial_column) not in black_pawn.possible_moves
+        assert indexes_to_algebraic(initial_row + 2, initial_column) not in black_pawn.possible_moves
+
+    @m.context("Test black pawn capture moves")
+    @m.it("If next square is blocked by a black piece, pawn shouldn't be able to capture it")
+    def test_black_pawn_capturing_moves(self):
+        test_board = Board()
+        test_board.init_empty_board()
+        initial_row = 6
+        initial_column = 4
+        black_pawn = Pawn(initial_row, initial_column, False)
+        white_pawn_a = Pawn(initial_row + 1, initial_column, True)
+        white_pawn_b = Pawn(initial_row + 1, initial_column - 1, True)
+        white_pawn_c = Pawn(initial_row + 1, initial_column + 1, True)
+        test_board.init_board_with_pieces(black_pawn, white_pawn_a, white_pawn_b, white_pawn_c)
+        black_pawn.update_possible_moves(test_board.squares)
+        print(test_board)
+        assert black_pawn.capture_moves
+        assert indexes_to_algebraic(initial_row + 1, initial_column) not in black_pawn.capture_moves
+        assert indexes_to_algebraic(initial_row + 1, initial_column - 1) in black_pawn.capture_moves
+        assert indexes_to_algebraic(initial_row + 1, initial_column + 1) in black_pawn.capture_moves
