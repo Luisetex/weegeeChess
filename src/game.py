@@ -3,7 +3,7 @@ from typing import List, Tuple
 from .board import Board
 from .exceptions import DiscoveredCheckException, ImpossibleMoveException, PieceNotFoundException
 from .parser import parse_command
-from .pieces import King, Piece
+from .pieces import King, Pawn, Piece
 from .player import Player
 from .utils import algebraic_to_indexes, indexes_to_algebraic
 
@@ -80,6 +80,10 @@ class Game:
         dest_row_index, dest_column_index = algebraic_to_indexes(destination_square)
         player_square = self.board.squares[origin_row_index][origin_column_index]
         opponent_square = self.board.squares[dest_row_index][dest_column_index]
+        if isinstance(player_square, Pawn):
+            if opponent_square:
+                if destination_square not in player_square.capture_moves:
+                    raise ImpossibleMoveException(origin_square, destination_square)
         self.board.squares[dest_row_index][dest_column_index] = player_piece
         player_piece.row = dest_row_index
         player_piece.column = dest_row_index
