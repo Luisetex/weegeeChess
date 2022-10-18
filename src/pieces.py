@@ -47,7 +47,7 @@ class Piece:
     ) -> bool:
         destination_square = squares[destination_row][destination_column]
         if isinstance(destination_square, Piece):
-            if destination_square.is_white != self.is_white:
+            if destination_square.is_white != self.is_white and not isinstance(self, Pawn):
                 return True
         else:
             return True
@@ -86,10 +86,9 @@ class Pawn(Piece):
         self.capture_moves: List[str] = []
         super().__init__(char=char, is_white=is_white, row=row, column=column, is_ranged=False)
         self._movement_vectors = [(-1, 0)] if self.is_white else [(1, 0)]
-        self._capture_vectors = [(1, 1), (1, -1)] if self.is_white else [(-1, -1), (-1, 1)]
+        self._capture_vectors = [(-1, 1), (-1, -1)] if self.is_white else [(1, -1), (1, 1)]
 
     def update_possible_moves(self, squares: List[List[Piece | None]]):
-        movements = self._movement_vectors
         squares_to_move = 1
         if self.is_white and self.row == 6:
             squares_to_move = 2
