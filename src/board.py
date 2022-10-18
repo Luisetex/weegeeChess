@@ -11,9 +11,6 @@ WHITE_SQUARE = " "
 class Board:
     squares: List[List[Piece | None]]
 
-    def __init__(self):
-        self.init_board()
-
     def __str__(self):
         text: str = ""
         for row_index, row in enumerate(self.squares):
@@ -61,6 +58,11 @@ class Board:
         # KINGS
         self.squares[0][4] = King(0, 4, False)
         self.squares[7][4] = King(7, 4, True)
+
+    def init_empty_board(self):
+        self.squares = []
+        for _ in range(8):
+            self.squares.append([None] * 8)
 
     def init_board_with_pieces(self, *pieces: Piece):
         for piece in pieces:

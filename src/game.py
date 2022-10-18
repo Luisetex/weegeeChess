@@ -11,6 +11,7 @@ from .utils import algebraic_to_indexes, indexes_to_algebraic
 class Game:
     def __init__(self):
         self.board = Board()
+        self.board.init_board()
         self.pieces = self._get_all_pieces()
         self.player_1 = Player(is_white=True, all_pieces=self.pieces)
         self.player_2 = Player(is_white=False, all_pieces=self.pieces)
