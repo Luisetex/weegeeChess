@@ -1,7 +1,6 @@
 from pytest import mark as m
 from src.board import Board
 from src.pieces import Rook
-from src.utils import indexes_to_algebraic
 
 test_board = Board().init_empty_board()
 test_white_rook = Rook(row=6, column=4, is_white=True)
@@ -12,12 +11,12 @@ test_black_rook = Rook(row=2, column=4, is_white=False)
 class TestRook:
     @m.context("Test rook movement vectors")
     @m.it("Rook should have its correct movement vectors")
-    def test_movement_vectors_white_pawn(self):
-        expected_white_pawn_movement_vectors = [(-1, 0), (1, 0), (0, 1), (0, -1)]
+    def test_movement_vectors_white_rook(self):
+        expected_white_rook_movement_vectors = [(-1, 0), (1, 0), (0, 1), (0, -1)]
         assert all(
             [
                 movement_vector in test_white_rook._movement_vectors
-                for movement_vector in expected_white_pawn_movement_vectors
+                for movement_vector in expected_white_rook_movement_vectors
             ]
         )
 
@@ -30,7 +29,6 @@ class TestRook:
         initial_column = 4  # e in algebraic
         rook = Rook(row=initial_row, column=initial_column, is_white=True)
         test_board.init_board_with_pieces(rook)
-        print(test_board)
         rook.update_possible_moves(test_board.squares)
         expected_possible_moves_same_column = ["e1", "e2", "e3", "e5", "e6", "e7", "e8"]
         expected_possible_moves_same_row = ["a4", "b4", "c4", "d4", "f4", "g4", "h4"]
@@ -73,7 +71,6 @@ class TestRook:
         expected_possible_moves_same_column = ["e1", "e2", "e3", "e5"]
         expected_possible_moves_same_row = ["a4", "b4", "c4", "d4", "f4", "g4"]
         expected_moves = expected_possible_moves_same_column + expected_possible_moves_same_row
-        print(rook_e4.possible_moves)
         assert len(rook_e4.possible_moves) == len(expected_moves)
         for expected_possible_move in expected_moves:
             assert expected_possible_move in rook_e4.possible_moves

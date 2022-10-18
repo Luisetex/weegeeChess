@@ -145,3 +145,6 @@ class Knight(Piece):
         char = WHITE_KNIGHT if is_white else BLACK_KNIGHT
         super().__init__(char=char, is_white=is_white, row=row, column=column, is_ranged=False)
         self._movement_vectors = [(2, -1), (2, 1), (-2, 1), (-2, -1), (1, 2), (-1, 2), (1, -2), (-1, -2)]
+
+    def update_possible_moves(self, squares: List[List[Piece | None]]):
+        super().update_possible_moves(squares, number_of_steps=1)
