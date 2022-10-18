@@ -78,7 +78,7 @@ class TestKnightk:
 
     @m.context("Test knight possible moves")
     @m.it("Knight should be able to move where a piece of the opposite color is")
-    def test_blocking_white_piece_knight_moves(self):
+    def test_capturing_white_piece_knight_moves(self):
         test_board = Board()
         test_board.init_empty_board()
         initial_row = 4  # 4 in algebraic
