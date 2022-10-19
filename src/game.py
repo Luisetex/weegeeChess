@@ -54,7 +54,11 @@ class Game:
             try:
                 if available_piece:
                     self._move_piece(
-                        attacking_player, defending_player, origin_square, destination_square
+                        attacking_player,
+                        available_piece,
+                        defending_player,
+                        origin_square,
+                        destination_square,
                     )
                     turn_over = True
                     print(self.board)
@@ -93,6 +97,8 @@ class Game:
         ]
         self.board.squares[destination_square_row][destination_square_column] = piece
         self.board.squares[original_square_row][original_square_column] = destination_square_content
+        if isinstance(piece, King):
+            attacking_player_king_algebraic = possible_move
         self._update_all_player_moves(defending_player)
         is_illegal = any(
             [
@@ -110,25 +116,24 @@ class Game:
     def _move_piece(
         self,
         attacking_player: Player,
+        attacking_player_piece: Piece,
         defending_player: Player,
         origin_square: str,
         destination_square: str,
     ):
-        player_piece = self.get_origin_square_player_piece(attacking_player, origin_square)
-        if player_piece:
-            if (
-                destination_square in player_piece.possible_moves
-                or destination_square in player_piece.capture_moves
-            ):
-                self._move_piece_to_square(
-                    player_piece,
-                    origin_square,
-                    destination_square,
-                    attacking_player,
-                    defending_player,
-                )
-            else:
-                raise ImpossibleMoveException(origin_square, destination_square)
+        if (
+            destination_square in attacking_player_piece.possible_moves
+            or destination_square in attacking_player_piece.capture_moves
+        ):
+            self._move_piece_to_square(
+                attacking_player_piece,
+                origin_square,
+                destination_square,
+                attacking_player,
+                defending_player,
+            )
+        else:
+            raise ImpossibleMoveException(origin_square, destination_square)
 
     def get_origin_square_player_piece(self, player: Player, origin_algebraic: str) -> Piece | None:
         row_index, column_index = algebraic_to_indexes(origin_algebraic)
@@ -140,7 +145,7 @@ class Game:
 
     def _move_piece_to_square(
         self,
-        player_piece: Piece,
+        attacking_player_piece: Piece,
         origin_square: str,
         destination_square: str,
         attacking_player: Player,
@@ -153,15 +158,15 @@ class Game:
 
         if opponent_square:
             if not (
-                destination_square in player_piece.capture_moves
-                or destination_square in player_piece.possible_moves
+                destination_square in attacking_player_piece.capture_moves
+                or destination_square in attacking_player_piece.possible_moves
             ):
                 raise ImpossibleMoveException(origin_square, destination_square)
             self._remove_piece_from_player(defending_player, opponent_square)
 
-        self.board.squares[dest_row_index][dest_column_index] = player_piece
-        player_piece.row = dest_row_index
-        player_piece.column = dest_column_index
+        self.board.squares[dest_row_index][dest_column_index] = attacking_player_piece
+        attacking_player_piece.row = dest_row_index
+        attacking_player_piece.column = dest_column_index
         self.board.squares[origin_row_index][origin_column_index] = None
         self._update_all_player_moves(attacking_player)
         self._update_all_player_moves(defending_player)

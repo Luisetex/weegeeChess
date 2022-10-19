@@ -4,8 +4,10 @@ from typing import List
 from .pieces import Bishop, King, Knight, Pawn, Piece, Queen, Rook
 from .utils import row_index_to_algebraic
 
-BLACK_SQUARE = "█"
-WHITE_SQUARE = " "
+""" BLACK_SQUARE = "█"
+WHITE_SQUARE = " " """
+BLACK_SQUARE = "·"
+WHITE_SQUARE = "·"
 
 
 class Board:
