@@ -17,6 +17,7 @@ class Game:
         self.player_1 = Player(is_white=True, all_pieces=self.pieces)
         self.player_2 = Player(is_white=False, all_pieces=self.pieces)
         self.checkmate = False
+        self.stalemate = False
 
     def play_game(self):
         print("Let the game begin!")
@@ -26,9 +27,9 @@ class Game:
             if self.checkmate:
                 break
             self._player_turn(self.player_2, self.player_1)
-            if self.checkmate:
+            if self.checkmate or self.stalemate:
                 break
-        print("Checkmate!")
+        print("Checkmate") if self.checkmate else print("Stalemate")
 
     def _player_turn(self, attacking_player: Player, defending_player: Player):
         turn_over = False
@@ -36,13 +37,17 @@ class Game:
             self._update_all_player_moves(attacking_player)
             self._update_all_player_moves(defending_player)
             self._remove_illegal_moves(attacking_player, defending_player)
+            has_player_available_moves = self._has_player_available_moves(attacking_player)
             opossite_checking_pieces = self._get_opposite_checking_pieces(
                 defending_player, attacking_player
             )
             if opossite_checking_pieces:
-                if self._is_checkmate(attacking_player):
+                if has_player_available_moves:
                     self.checkmate = True
                     break
+            if has_player_available_moves:
+                self.stalemate = True
+                break
 
             attacking_color = "White" if attacking_player.is_white else "Black"
             print(
@@ -205,8 +210,8 @@ class Game:
             if king_algebraic_square in piece.possible_moves
         ]
 
-    def _is_checkmate(self, attacking_player: Player) -> bool:
-        for piece in attacking_player.own_pieces:
+    def _has_player_available_moves(self, player: Player) -> bool:
+        for piece in player.own_pieces:
             available_moves = piece.capture_moves + piece.possible_moves
             if available_moves:
                 return False
