@@ -181,9 +181,9 @@ class Game:
             ):
                 en_passant_pawn_column = origin_column_index
                 en_passant_pawn_row = (
-                    origin_row_index + 1
+                    origin_row_index - 1
                     if attacking_player_piece.is_white
-                    else origin_row_index - 1
+                    else origin_row_index + 1
                 )
                 en_passant_pawn = EnPassantPawn(attacking_player_piece)
                 self.board.squares[en_passant_pawn_row][en_passant_pawn_column] = en_passant_pawn
@@ -192,13 +192,6 @@ class Game:
         self.board.squares[origin_row_index][origin_column_index] = None
         self.update_all_player_moves(attacking_player)
         self.update_all_player_moves(defending_player)
-        discovered_check_pieces = self._get_opposite_checking_pieces(
-            attacking_player=defending_player, defending_player=attacking_player
-        )
-        if discovered_check_pieces:
-            self.board.squares[origin_row_index][origin_column_index] = player_square
-            self.board.squares[dest_row_index][dest_column_index] = opponent_square
-            raise DiscoveredCheckException(discovered_check_pieces)
 
     def _get_all_pieces(self) -> List[Piece]:
         pieces: List[Piece] = []
