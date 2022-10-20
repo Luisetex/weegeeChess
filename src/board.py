@@ -1,4 +1,3 @@
-from copy import copy
 from typing import List
 
 from .pieces import Bishop, King, Knight, Pawn, Piece, Queen, Rook

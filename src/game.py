@@ -1,10 +1,9 @@
-from copy import copy
 from typing import List
 
 from .board import Board
 from .exceptions import DiscoveredCheckException, ImpossibleMoveException
 from .parser import parse_command
-from .pieces import King, Piece
+from .pieces import EnPassantPawn, King, Pawn, Piece
 from .player import Player
 from .utils import algebraic_to_indexes, indexes_to_algebraic
 
@@ -34,8 +33,9 @@ class Game:
     def _player_turn(self, attacking_player: Player, defending_player: Player):
         turn_over = False
         while not turn_over:
-            self._update_all_player_moves(attacking_player)
-            self._update_all_player_moves(defending_player)
+            self._remove_en_passant_pawn(attacking_player)
+            self.update_all_player_moves(attacking_player)
+            self.update_all_player_moves(defending_player)
             self._remove_illegal_moves(attacking_player, defending_player)
             has_player_available_moves = self._has_player_available_moves(attacking_player)
             opossite_checking_pieces = self._get_opposite_checking_pieces(
@@ -55,10 +55,10 @@ class Game:
             )
             move = input()
             origin_square, destination_square = parse_command(move)
-            available_piece = self.get_origin_square_player_piece(attacking_player, origin_square)
+            available_piece = self._get_origin_square_player_piece(attacking_player, origin_square)
             try:
                 if available_piece:
-                    self._move_piece(
+                    self.move_piece(
                         attacking_player,
                         available_piece,
                         defending_player,
@@ -72,7 +72,7 @@ class Game:
             except (DiscoveredCheckException, ImpossibleMoveException) as exception:
                 print(f"Careful! {str(exception)}")
 
-    def _update_all_player_moves(self, player: Player):
+    def update_all_player_moves(self, player: Player):
         for piece in player.own_pieces:
             piece.update_possible_moves(self.board.squares)
 
@@ -104,7 +104,7 @@ class Game:
         self.board.squares[original_square_row][original_square_column] = destination_square_content
         if isinstance(piece, King):
             attacking_player_king_algebraic = possible_move
-        self._update_all_player_moves(defending_player)
+        self.update_all_player_moves(defending_player)
         is_illegal = any(
             [
                 attacking_player_king_algebraic in (piece.possible_moves + piece.capture_moves)
@@ -115,10 +115,10 @@ class Game:
             destination_square_column
         ] = destination_square_content
         self.board.squares[original_square_row][original_square_column] = piece
-        self._update_all_player_moves(defending_player)
+        self.update_all_player_moves(defending_player)
         return is_illegal
 
-    def _move_piece(
+    def move_piece(
         self,
         attacking_player: Player,
         attacking_player_piece: Piece,
@@ -130,7 +130,7 @@ class Game:
             destination_square in attacking_player_piece.possible_moves
             or destination_square in attacking_player_piece.capture_moves
         ):
-            self._move_piece_to_square(
+            self.move_piece_to_square(
                 attacking_player_piece,
                 origin_square,
                 destination_square,
@@ -140,7 +140,9 @@ class Game:
         else:
             raise ImpossibleMoveException(origin_square, destination_square)
 
-    def get_origin_square_player_piece(self, player: Player, origin_algebraic: str) -> Piece | None:
+    def _get_origin_square_player_piece(
+        self, player: Player, origin_algebraic: str
+    ) -> Piece | None:
         row_index, column_index = algebraic_to_indexes(origin_algebraic)
         origin_square = self.board.squares[row_index][column_index]
         if origin_square:
@@ -148,7 +150,7 @@ class Game:
                 return origin_square
         return None
 
-    def _move_piece_to_square(
+    def move_piece_to_square(
         self,
         attacking_player_piece: Piece,
         origin_square: str,
@@ -172,9 +174,24 @@ class Game:
         self.board.squares[dest_row_index][dest_column_index] = attacking_player_piece
         attacking_player_piece.row = dest_row_index
         attacking_player_piece.column = dest_column_index
+        if isinstance(attacking_player_piece, Pawn):
+            if (
+                dest_column_index == origin_column_index
+                and abs(dest_row_index - origin_row_index) == 2
+            ):
+                en_passant_pawn_column = origin_column_index
+                en_passant_pawn_row = (
+                    origin_row_index + 1
+                    if attacking_player_piece.is_white
+                    else origin_row_index - 1
+                )
+                en_passant_pawn = EnPassantPawn(attacking_player_piece)
+                self.board.squares[en_passant_pawn_row][en_passant_pawn_column] = en_passant_pawn
+                attacking_player.own_pieces.append(en_passant_pawn)
+
         self.board.squares[origin_row_index][origin_column_index] = None
-        self._update_all_player_moves(attacking_player)
-        self._update_all_player_moves(defending_player)
+        self.update_all_player_moves(attacking_player)
+        self.update_all_player_moves(defending_player)
         discovered_check_pieces = self._get_opposite_checking_pieces(
             attacking_player=defending_player, defending_player=attacking_player
         )
@@ -196,6 +213,10 @@ class Game:
         return self.board.get_square_from_row_column(row_index, column_index)
 
     def _remove_piece_from_player(self, player: Player, piece: Piece):
+        if isinstance(piece, EnPassantPawn):
+            original_pawn = piece.original_pawn
+            player.own_pieces.pop(player.own_pieces.index(original_pawn))
+            self.board.squares[original_pawn.row][original_pawn.column] = None
         player.own_pieces.pop(player.own_pieces.index(piece))
 
     def _get_opposite_checking_pieces(
@@ -216,3 +237,11 @@ class Game:
             if available_moves:
                 return False
         return True
+
+    def _remove_en_passant_pawn(self, player: Player):
+        en_passant_pawn: Piece | None = None
+        for piece in player.own_pieces:
+            en_passant_pawn = piece if isinstance(piece, EnPassantPawn) else None
+        if en_passant_pawn:
+            self.board.squares[en_passant_pawn.row][en_passant_pawn.column] = None
+            player.own_pieces.remove(en_passant_pawn)
