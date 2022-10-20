@@ -1,11 +1,12 @@
-from copy import copy
 from typing import List
 
 from .pieces import Bishop, King, Knight, Pawn, Piece, Queen, Rook
 from .utils import row_index_to_algebraic
 
-BLACK_SQUARE = "█"
-WHITE_SQUARE = " "
+""" BLACK_SQUARE = "█"
+WHITE_SQUARE = " " """
+BLACK_SQUARE = "·"
+WHITE_SQUARE = "·"
 
 
 class Board:
@@ -75,18 +76,3 @@ class Board:
 
     def get_square_from_row_column(self, row_index: int, column_index: int) -> Piece | None:
         return self.squares[row_index][column_index]
-
-    def update_board(self):
-        for row_index, row in enumerate(self.squares):
-            for column_index, origin_square in enumerate(row):
-                if origin_square:
-                    if origin_square.row != row_index or origin_square.column != column_index:
-                        destiny_square = self.squares[origin_square.row][origin_square.column]
-                        if destiny_square:
-                            self._update_squares(origin_square, destiny_square)
-                        elif destiny_square == None:
-                            self._update_squares(origin_square, destiny_square)
-
-    def _update_squares(self, origin_square: Piece | None, destiny_square: Piece | None):
-        destiny_square = copy(origin_square)
-        origin_square = None

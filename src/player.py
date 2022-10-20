@@ -12,6 +12,12 @@ class Player:
     def _get_own_pieces(self, pieces: List[Piece]) -> List[Piece]:
         return [piece for piece in pieces if piece.is_white == self.is_white]
 
+    def get_all_available_moves(self):
+        available_moves: List[str] = []
+        for piece in self.own_pieces:
+            available_moves += (piece.capture_moves + piece.possible_moves)
+        return available_moves
+
     """ def update_own_pieces(self):
         own_pieces: List[Piece] = []
         for row in self.squares:
