@@ -6,10 +6,10 @@ Chess engine implementation using Python's native libraries.
 
 - [ ] Castling
 - [ ] Promotion
-- [ ] En passant
-- [ ] Check & Checkmate routines
+- [x] En passant
+- [x] Check & Checkmate routines
 - [ ] Draw logic
-  - [ ] Stalemate
+  - [x] Stalemate
   - [ ] Dead position: King vs. king. King and bishop vs. king. King and knight vs. king. King and bishop vs. king and bishop of the same color as the opponent's bishop
   - [ ] Threefold Repetition
   - [ ] 50-Move Rule
