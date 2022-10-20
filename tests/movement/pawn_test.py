@@ -3,7 +3,6 @@ from src.board import Board
 from src.pieces import Pawn
 from src.utils import indexes_to_algebraic
 
-test_board = Board().init_empty_board()
 test_white_pawn = Pawn(row=6, column=4, is_white=True)
 test_black_pawn = Pawn(row=2, column=4, is_white=False)
 
